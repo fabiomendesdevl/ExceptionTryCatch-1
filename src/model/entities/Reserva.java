@@ -4,6 +4,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
+import model.exceptions.DominioException;
+
 public class Reserva {
 
 	private Integer numeroQuarto;
@@ -17,6 +19,9 @@ public class Reserva {
 	}
 
 	public Reserva(Integer numeroQuarto, Date checkIn, Date checkOut) {
+		if (!checkOut.after(checkIn)) {
+			throw new DominioException ("o Check-out é uma data depois do Check-in");
+		}
 		this.numeroQuarto = numeroQuarto;
 		this.checkIn = checkIn;
 		this.checkOut = checkOut;
@@ -43,18 +48,17 @@ public class Reserva {
 		return TimeUnit.DAYS.convert(calc, TimeUnit.MILLISECONDS);
 	}
 
-	public String atualizaData(Date checkIn, Date checkOut) {
+	public void atualizaData(Date checkIn, Date checkOut){
 
 		Date now = new Date();
 		if (checkIn.before(now) || checkOut.before(now)) {
-			return "Probleme na reserva...";
+			throw new DominioException ("As datas de reserva tem que ser funturas...");
 		}
 		if (!checkOut.after(checkIn)) {
-			return "Probleme na reserva: o Check-out é uma data depois do Check-in";
+			throw new DominioException ("o Check-out é uma data depois do Check-in");
 		}
 		this.checkIn = checkIn;
 		this.checkOut = checkOut;
-		return null;
 	}
 
 	@Override
